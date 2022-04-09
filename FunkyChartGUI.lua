@@ -6,7 +6,7 @@
      / __/ / /_/ / / / / ,< / /_/ / /___/ / / / /_/ / /  / /_  
     /_/    \__,_/_/ /_/_/|_|\__, /\____/_/ /_/\__,_/_/   \__/  
                            /____/
-    v1.05
+    v1.051
     Made with ♥ by accountrev           
 
     Thanks for downloading and using my script, if you're here to just use it once or plan to use it many times.
@@ -18,6 +18,10 @@
     !!! Please report any bugs/questions over on the Issues tab on GitHub, I will try to respond ASAP. !!!
     !!! Please report any bugs/questions over on the Issues tab on GitHub, I will try to respond ASAP. !!!
     !!! Please report any bugs/questions over on the Issues tab on GitHub, I will try to respond ASAP. !!!
+
+    [VERSION 1.051]
+
+    -   Added selection for executors
 
     [VERSION 1.05]
 
@@ -61,6 +65,7 @@ _G.customChart = {
     loadedAudioID = "",
     timeOffset = 0,
     side = "Left",
+    executor = ""
 }
 
 
@@ -152,11 +157,17 @@ function loadChart(chart)
         _G.customChart.loadedAudioID = ""
         return
     else
-        getasset = getsynasset or getcustomasset
-        _G.customChart.loadedAudioID = getasset(_G.customChart.loadedAudioID)
+        if _G.customChart.executor == "" then
+            Announce("Select an executor", "Select an executor to continue loading.", 10, "error")
+            return
+        else
+            if _G.customChart.executor == "Synapse" then
+                _G.customChart.loadedAudioID = getsynasset(_G.customChart.loadedAudioID)
+            elseif _G.customChart.executor == "Krnl" then
+                _G.customChart.loadedAudioID = getcustomasset(_G.customChart.loadedAudioID)
+            end
+        end
     end
-
-
     game.SoundService.ClientMusic.SoundId = _G.customChart.loadedAudioID
     Announce("Song Loaded", _G.customChart.chartName .. "\n" .. _G.customChart.chartAuthor, 10, "loaded")
     Data("s")
@@ -260,6 +271,11 @@ function loadGUI()
         if not stat then
             errorHandler(err)
         end
+    end)
+
+    ChartOptions:Dropdown("Executor",{"Synapse", "Krnl"},true,function(mob)
+        _G.customChart.executor = mob
+        Data("s")
     end)
 
     GeneralOptions:Toggle("Prevent Error Lag",function(bool)
