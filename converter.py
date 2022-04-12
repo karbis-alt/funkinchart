@@ -1,4 +1,5 @@
 # this isnt as clean as funkychart
+# i am also not that good at python lol
 
 import json
 import os
