@@ -31,9 +31,19 @@
 !!! Please report any bugs/questions over on the Issues tab on GitHub, I will try to respond ASAP. !!!
 !!! Please report any bugs/questions over on the Issues tab on GitHub, I will try to respond ASAP. !!!
 
+[VERSION 1.1]
+
+-   Made major changes to chart converting (all charts before 1.1 are now invalid, sorry :( )
+-   Fixed a bug with file path directory erroring out
+-   Cleaned up title (not really just added verison as a variable lol)
+
+-------------------------------------------------
+
 [VERSION 1.05]
 
 -   Added update notifier for future updates.
+-   _G.customChart.loadedAudioID does not use getcustomasset or getsynasset anymore, will be done in-game.
+
 
 [VERSION 1.04]
 
@@ -88,7 +98,7 @@ windowTemp = tk.Tk()
 windowTemp.withdraw()
 
 
-version = "v1.05"
+version = "v1.1"
 
 
 # FunkyChart Logo
@@ -274,7 +284,7 @@ def parseOsuBeatmap(filename):
 
     # Beatmap validation - If the files does not have any of these sections, it will not continue.
     beatmapValidation = {"general" : False, "metadata" : False, "difficulty" : False, "hitobj" : False}
-
+    
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -397,14 +407,15 @@ def convertChartToFF(filePath):
     noteLocationDictionary = {"64" : "0", "192" : "1", "320" : "2", "448" : "3"}
     counter = 1
 
-    with open(filePath + "\\" + chartDictionary["chartConverter"] + "_" + chartDictionary["chartName"] + "_" + str(time.time()) + ".lua", "w") as file:
+    with open(r"" + filePath + "/" + chartDictionary["chartConverter"] + "_" + chartDictionary["chartName"] + "_" + str(time.time()) + ".lua", "w") as file:
 
         # Beginning of the file - puts info about the chart (name, author, difficulty, etc.)
-        file.writelines(["_G.customChart.chartName = \"" + chartDictionary["chartName"] + "\"\n",
-                        "_G.customChart.chartAuthor = \"" + chartDictionary["chartSongArtist"] + "\"\n",
-                        "_G.customChart.chartNameColor = \"<font color=\'rgb(" + chartDictionary["fontColor"] + ")\'>%s</font>\"\n",
-                        "_G.customChart.chartDifficulty = \"" + chartDictionary["chartAuthor"] + "\'s " + chartDictionary["chartDifficulty"] + "\"\n",
-                        "_G.customChart.chartConverter = \"" + chartDictionary["chartConverter"] + "\"\n"])
+        file.writelines(["data.chartData = {\n",
+                        "chartName = \"" + chartDictionary["chartName"] + "\",\n",
+                        "chartAuthor = \"" + chartDictionary["chartSongArtist"] + "\",\n",
+                        "chartNameColor = \"<font color=\'rgb(" + chartDictionary["fontColor"] + ")\'>%s</font>\",\n",
+                        "chartDifficulty = \"" + chartDictionary["chartAuthor"] + "\'s " + chartDictionary["chartDifficulty"] + "\",\n",
+                        "chartConverter = \"" + chartDictionary["chartConverter"] + "\",\n"])
 
 
         # Different actions wheter the user chose Online or Local mode.
@@ -415,13 +426,12 @@ def convertChartToFF(filePath):
         #    file.writelines(["_G.customChart.loadedAudioID = \"rbxassetid://" + chartDictionary["audio"] + "\"\n",
         #                     "_G.customChart.timeOffset = 0"])
 
-        file.writelines(["\nif syn then _G.customChart.loadedAudioID = getsynasset(\"FunkyChart/Audio/" + chartDictionary["audio"].split("/")[-1] + "\") else _G.customChart.loadedAudioID = getcustomasset(\"FunkyChart/Audio/" + chartDictionary["audio"].split("/")[-1] + "\") end\n\n",
-                             "_G.customChart.timeOffset = 0"])
+        file.writelines(["\nloadedAudioID = \"FunkyChart/Audio/" + chartDictionary["audio"].split("/")[-1] + "\","])
 
 
 
         # Beginning of chart notes
-        file.write("\n\n_G.customChart.chartNotes = {\n")
+        file.write("\n\nchartNotes = {\n")
 
         
         for note in hitobjList:
@@ -431,13 +441,13 @@ def convertChartToFF(filePath):
             # Normal Note
             if len(hitObject) == 9:
 
-                side = "_G.customChart.side"
+                side = "data.options.side"
                 position = noteLocationDictionary[hitObject[0]]
                 length = "0"
                 time1 = str(int(hitObject[2]) / 1000)
                 str_counter = str(counter)
 
-                convertedLine = f'[{counter}]=' + '{' + f'Side = {side},Length = {length},Time = {time1}+_G.customChart.timeOffset,Position = {position}' + '}'
+                convertedLine = f'[{counter}]=' + '{' + f'Side = {side},Length = {length},Time = {time1}+data.options.timeOffset,Position = {position}' + '}'
 
                 if counter != len(hitobjList):
                     convertedLine = convertedLine + ","
@@ -450,13 +460,13 @@ def convertChartToFF(filePath):
             # Hold Note
             elif len(hitObject) == 10:
 
-                side = "_G.customChart.side"
+                side = "data.options.side"
                 position = noteLocationDictionary[hitObject[0]]
                 length = str((int(hitObject[5]) - int(hitObject[2])) / 1000)
                 time1 = str(int(hitObject[2]) / 1000)
                 str_counter = str(counter)
 
-                convertedLine = f'[{counter}]=' + '{' + f'Side = {side},Length = {length},Time = {time1}+_G.customChart.timeOffset,Position = {position}' + '}'
+                convertedLine = f'[{counter}]=' + '{' + f'Side = {side},Length = {length},Time = {time1}+data.options.timeOffset,Position = {position}' + '}'
 
                 if counter != len(hitobjList):
                     convertedLine = convertedLine + ","
@@ -466,7 +476,7 @@ def convertChartToFF(filePath):
 
                 file.write(convertedLine + "\n")
 
-        file.write("\n}")
+        file.write("}\n}")
         file.close()
 
         #if mode == "l":
