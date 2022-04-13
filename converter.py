@@ -43,7 +43,7 @@ del nc
 for i, v in globalnotes.items():
     noten = globalnotes[i][1]+1
     side = 0
-    if noten >= 5:
+    if noten >= 4:
         side = 1
         noten = noten - 4
     if globalsectiondata[i]["mustHitSection"] == True:
@@ -63,27 +63,30 @@ def fixcombineddata():
     delindexlist = []
     for i, v in chartdatacombined.items():
         for j, b in chartdatacombined.items():
-            fixedpos = v[2]
-            if fixedpos >= 5:
+            fixedpos = v[1]
+            if fixedpos >= 4:
                 fixedpos -= 4
-            if b[0] == v[0] and b[2] == fixedpos and i != j:
+            if b[0] == v[0] and b[1] == fixedpos and i != j:
                 delindexlist.append(j)
     for v in delindexlist:
         if v in chartdatacombined:
             del chartdatacombined[v]
 
 if choice == "1":
+    print("Proccessing...")
     fixcombineddata()
 
 def proccessdata(tab):
     # NOTE i am not good in string manipulation in python at all
     final = ""
+    count = 0
     for i, v in tab.items():
         pos = v[1]
-        if pos >= 5:
+        if pos >= 4:
             pos -= 4
         final += "[{}]={{Side = data.options.side,Length = {}, Time = {}+data.options.timeOffset,Position = {}}},\n".format(
-            i, v[2]/1000,v[0]/1000,pos)
+            count, v[2]/1000,v[0]/1000,pos)
+        count += 1
     return final[0:len(final)-2]    
 
 # Its time to make file.
