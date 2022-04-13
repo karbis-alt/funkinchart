@@ -82,11 +82,8 @@ def proccessdata(tab):
         pos = v[1]
         if pos >= 5:
             pos -= 4
-        final += "[{}]={{Side = data.options.side,Length = {}, Time = {}+data.options.timeOffset,Position = {}}}".format(
+        final += "[{}]={{Side = data.options.side,Length = {}, Time = {}+data.options.timeOffset,Position = {}}},\n".format(
             i, v[2]/1000,v[0]/1000,pos)
-        if i != len(tab):
-            final += ","
-        final += "\n"
     return final[0:len(final)-2]    
 
 # Its time to make file.
