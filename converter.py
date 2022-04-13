@@ -82,7 +82,7 @@ def proccessdata(tab):
         if pos >= 5:
             pos -= 4
         final += "[{}]={{Side = data.options.side,Length = {}, Time = {}+data.options.timeOffset,Position = {}}}".format(
-            i-1, v[2]/1000,v[0]/1000,pos)
+            i, v[2]/1000,v[0]/1000,pos)
         if i != len(tab):
             final += ","
         final += "\n"
