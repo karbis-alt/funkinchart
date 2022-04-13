@@ -72,7 +72,8 @@ def fixcombineddata():
         if v in chartdatacombined:
             del chartdatacombined[v]
 
-fixcombineddata()
+if choice == "1":
+    fixcombineddata()
 
 def proccessdata(tab):
     # NOTE i am not good in string manipulation in python at all
