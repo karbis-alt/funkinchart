@@ -4,13 +4,17 @@
 import json
 import os
 
-print("Insert username")
+print("Insert username (for conversion)")
 user = input()
 print("Choose color (In RGB)")
 print("EXAMPLE: 192, 0, 255")
 color = input()
 print("Insert chart author (leave empty if unknown)")
 chartauthor = input()
+print("Insert song name (leave empty for auto selection)")
+songname = input()
+print("Insert difficulty (leave empty for auto selection)")
+difficultyname = input()
 print("Insert audio name (with file extension)")
 audioname = input()
 print("Insert FNF Chart file location")
@@ -90,16 +94,23 @@ def proccessdata(tab):
     return final[0:len(final)-2]    
 
 # Its time to make file.
-with open(user + "_" + os.path.splitext(os.path.basename(location))[0].replace("-","_") + ".lua","w") as file:
+split = os.path.basename(location).split("-")
+chartname = ""
+i = 0
+for v in split:
+    if i == len(split)-1:
+        break
+    chartname += split[i] + " "
+    i += 1
+if songname != "":
+    chartname = songname
+with open(user + "_" + chartname.replace(" ","_") + ".lua","w") as file:
     split = os.path.basename(location).split("-")
-    chartname = ""
-    i = 0
-    for v in split:
-        if i == len(split)-1:
-            break
-        chartname += split[i] + " "
-        i += 1
+    if songname == "":
+        chartname = chartname[0:len(chartname)-1]
     difficulty = split[-1].split(".")[0]
+    if difficultyname != "":
+        difficulty = difficultyname
     if chartauthor == "":
         truechartauthor = "Unknown"
     else:
@@ -112,7 +123,7 @@ with open(user + "_" + os.path.splitext(os.path.basename(location))[0].replace("
     elif choice == "3":
         truetab = chartdatabf
     finale = 'data.chartData = {{\nchartName = "{}",\nchartAuthor = "{}",\nchartNameColor="{}",\nchartDifficulty = "{}",\nchartConverter = "{}",\n\nloadedAudioID = "FunkyChart/Audio/{}",\n\nchartNotes = {{\n{}\n}}\n}}'.format(
-        chartname[0:len(chartname)-1], truechartauthor, namecolor, difficulty, user, audioname, proccessdata(truetab))
+        chartname, truechartauthor, namecolor, difficulty, user, audioname, proccessdata(truetab))
     file.write(finale)
 print("Done, you are free to close this now")
 input()
