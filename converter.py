@@ -65,13 +65,19 @@ for i, v in globalnotes.items():
 def fixcombineddata():
     #removes duplicates
     delindexlist = []
+    c1 = 0
+    c2 = 0
     for i, v in chartdatacombined.items():
         for j, b in chartdatacombined.items():
+            if not (c2 in delindexlist): continue
             fixedpos = v[1]
             if fixedpos >= 4:
                 fixedpos -= 4
-            if b[0] == v[0] and b[1] == fixedpos and i != j:
-                delindexlist.append(j)
+            if b[0] == v[0] and b[1] == fixedpos and c1 != c2:
+                delindexlist.append(c2)
+            c2 += 1
+        c1 += 1
+        c2 = 0
     for v in delindexlist:
         if v in chartdatacombined:
             del chartdatacombined[v]
@@ -104,10 +110,10 @@ for v in split:
     i += 1
 if songname != "":
     chartname = songname
+if songname == "":
+    chartname = chartname[0:len(chartname)-1]
 with open(user + "_" + chartname.replace(" ","_") + ".lua","w") as file:
     split = os.path.basename(location).split("-")
-    if songname == "":
-        chartname = chartname[0:len(chartname)-1]
     difficulty = split[-1].split(".")[0]
     if difficultyname != "":
         difficulty = difficultyname
