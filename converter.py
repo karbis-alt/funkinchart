@@ -17,6 +17,8 @@ print("Insert difficulty (leave empty for auto selection)")
 difficultyname = input()
 print("Insert audio name (with file extension)")
 audioname = input()
+print("Insert file name (leave empty for auto selection)")
+filename = input()
 print("Insert FNF Chart file location")
 print("EXAMPLE: C:\\Users\\name\\some random mod\\assets\\data\\a song\\a-song-hard.json")
 print("If you want to quickly get chart location, ctrl+click on the json file and paste it (make sure to remove quotations)")
@@ -82,8 +84,8 @@ def fixcombineddata():
         if v in chartdatacombined:
             del chartdatacombined[v]
 
+print("Proccessing...")
 if choice == "1":
-    print("Proccessing...")
     fixcombineddata()
 
 def proccessdata(tab):
@@ -112,7 +114,12 @@ if songname != "":
     chartname = songname
 if songname == "":
     chartname = chartname[0:len(chartname)-1]
-with open(user + "_" + chartname.replace(" ","_") + ".lua","w") as file:
+afilename = ""
+if filename != "":
+    afilename = filename + ".lua"
+else:
+    user + "_" + chartname.replace(" ","_") + ".lua"
+with open(afilename,"w") as file:
     split = os.path.basename(location).split("-")
     difficulty = split[-1].split(".")[0]
     if difficultyname != "":
@@ -128,7 +135,7 @@ with open(user + "_" + chartname.replace(" ","_") + ".lua","w") as file:
         truetab = chartdataopp
     elif choice == "3":
         truetab = chartdatabf
-    finale = 'data.chartData = {{\nchartName = "{}",\nchartAuthor = "{}",\nchartNameColor="{}",\nchartDifficulty = "{}",\nchartConverter = "{}",\n\nloadedAudioID = "FunkyChart/Audio/{}",\n\nchartNotes = {{\n{}\n}}\n}}'.format(
+    finale = 'data.versions.loadingVersion = "v1.11"\n\ndata.chartData = {{\nchartName = [[{}]],\nchartAuthor = [[{}]],\nchartNameColor="{}",\nchartDifficulty = [[{}]],\nchartConverter = [[{}]],\n\nloadedAudioID = "FunkyChart/Audio/{}",\n\nchartNotes = {{\n{}\n}}\n}}'.format(
         chartname, truechartauthor, namecolor, difficulty, user, audioname, proccessdata(truetab))
     file.write(finale)
 print("Done, you are free to close this now")
