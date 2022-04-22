@@ -17,14 +17,24 @@ print("Insert difficulty (leave empty for auto selection)")
 difficultyname = input()
 print("Insert audio name (with file extension)")
 audioname = input()
-print("Insert file name (leave empty for auto selection)")
+print("Insert custom file name (leave empty for auto selection)")
 filename = input()
+print("Use image/video for background of chart?")
+print("1. Use image")
+print("2. Use video")
+print("3. Dont use anything")
+choice2 = input()
+if choice2 == "1":
+    print("Insert image name (with file extension)")
+    imagename = input()
+elif choice2 == "2":
+    print("Insert video name (with file extension)")
+    videoname = input()
 print("Insert FNF Chart file location")
 print("EXAMPLE: C:\\Users\\name\\some random mod\\assets\\data\\a song\\a-song-hard.json")
 print("If you want to quickly get chart location, ctrl+click on the json file and paste it (make sure to remove quotations)")
 location = input()
 print("How to handle chart data?")
-print("INSERT NUMBER")
 print("1. Combine both sides")
 print("2. Player 1 only")
 print("3. Player 2 only")
@@ -116,10 +126,10 @@ if songname == "":
     chartname = chartname[0:len(chartname)-1]
 afilename = ""
 if filename != "":
-    afilename = filename + ".lua"
+    afilename = filename
 else:
-    user + "_" + chartname.replace(" ","_") + ".lua"
-with open(afilename,"w") as file:
+    afilename = user + "_" + chartname.replace(" ","_") + "_DONOTEDIT-OR-EXECUTE"
+with open(afilename+ ".lua","w") as file:
     split = os.path.basename(location).split("-")
     difficulty = split[-1].split(".")[0]
     if difficultyname != "":
@@ -135,8 +145,16 @@ with open(afilename,"w") as file:
         truetab = chartdataopp
     elif choice == "3":
         truetab = chartdatabf
-    finale = 'data.versions.loadingVersion = "v1.11"\n\ndata.chartData = {{\nchartName = [[{}]],\nchartAuthor = [[{}]],\nchartNameColor="{}",\nchartDifficulty = [[{}]],\nchartConverter = [[{}]],\n\nloadedAudioID = "FunkyChart/Audio/{}",\n\nchartNotes = {{\n{}\n}}\n}}'.format(
-        chartname, truechartauthor, namecolor, difficulty, user, audioname, proccessdata(truetab))
+
+    addlines = ""
+    if choice2 == "1":
+        addlines = 'additionalID = "FunkyChart/Assets/{}",\nadditionalIDType = "image",'.format(imagename)
+    elif choice2 == "2":
+        addlines = 'additionalID = "FunkyChart/Assets/{}",\nadditionalIDType = "video",'.format(videoname)
+    elif choice2 == "3":
+        addlines = 'additionalIDType = "none",'
+    finale = 'data.versions.loadingVersion = "v1.12"\n\ndata.chartData = {{\nchartName = [[{}]],\nchartAuthor = [[{}]],\nchartNameColor="{}",\nchartDifficulty = [[{}]],\nchartConverter = [[{}]],\n\nloadedAudioID = "FunkyChart/Audio/{}",\n{}\n\nchartNotes = {{\n{}\n}}\n}}'.format(
+        chartname, truechartauthor, namecolor, difficulty, user, audioname, addlines ,proccessdata(truetab))
     file.write(finale)
 print("Done, you are free to close this now")
 input()
